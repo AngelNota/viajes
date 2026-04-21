@@ -1,0 +1,172 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,800&family=Manrope:wght@400;500;600;700;800&display=swap');
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Manrope', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-display: 'Fraunces', ui-serif, Georgia, serif;
+}
+
+@layer base {
+    :root {
+        --bg-cream: #f7f4ea;
+        --bg-mist: #eaf4f1;
+        --ink: #162127;
+        --ink-soft: #3c4f5a;
+        --brand-coral: #ef6a3c;
+        --brand-teal: #0f6f79;
+        --brand-mint: #68c2a3;
+    }
+
+    html,
+    body {
+        min-height: 100%;
+    }
+
+    body {
+        color: var(--ink);
+        background:
+            radial-gradient(circle at 12% 8%, rgb(239 106 60 / 0.2), transparent 36%),
+            radial-gradient(circle at 88% 15%, rgb(104 194 163 / 0.22), transparent 34%),
+            radial-gradient(circle at 50% 92%, rgb(15 111 121 / 0.17), transparent 40%),
+            linear-gradient(145deg, var(--bg-cream) 0%, var(--bg-mist) 100%);
+        font-family: var(--font-sans);
+    }
+
+    h1,
+    h2,
+    h3,
+    .font-display {
+        font-family: var(--font-display);
+        letter-spacing: -0.02em;
+    }
+
+    :focus-visible {
+        outline: 2px solid var(--brand-teal);
+        outline-offset: 2px;
+    }
+}
+
+@layer components {
+    .grain-overlay {
+        position: relative;
+    }
+
+    .grain-overlay::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.22;
+        z-index: 0;
+        background-image: radial-gradient(rgb(0 0 0 / 0.16) 0.45px, transparent 0.45px);
+        background-size: 3px 3px;
+    }
+
+    .elevated-panel {
+        background: rgb(255 255 255 / 0.82);
+        border: 1px solid rgb(255 255 255 / 0.75);
+        box-shadow: 0 16px 40px rgb(15 111 121 / 0.16);
+        backdrop-filter: blur(6px);
+    }
+
+    .soft-chip {
+        border-radius: 999px;
+        border: 1px solid rgb(22 33 39 / 0.14);
+        padding: 0.25rem 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+        background: rgb(255 255 255 / 0.68);
+    }
+
+    .accent-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        border-radius: 0.9rem;
+        padding: 0.72rem 1.1rem;
+        color: #fff;
+        font-weight: 700;
+        background: linear-gradient(140deg, var(--brand-teal) 0%, #1f8d7f 100%);
+        transition: transform 180ms ease, box-shadow 180ms ease;
+        box-shadow: 0 10px 22px rgb(15 111 121 / 0.32);
+    }
+
+    .accent-button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 14px 24px rgb(15 111 121 / 0.38);
+    }
+
+    .accent-button:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+    }
+
+    .outline-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.9rem;
+        border: 1px solid rgb(22 33 39 / 0.22);
+        padding: 0.68rem 1.05rem;
+        font-weight: 700;
+        color: var(--ink);
+        background: rgb(255 255 255 / 0.65);
+        transition: background-color 180ms ease, transform 180ms ease;
+    }
+
+    .outline-button:hover {
+        transform: translateY(-1px);
+        background: rgb(255 255 255 / 0.88);
+    }
+
+    .reveal-up {
+        animation: reveal-up 620ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+
+    .float-slow {
+        animation: float-slow 8s ease-in-out infinite;
+    }
+}
+
+@keyframes reveal-up {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes float-slow {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
