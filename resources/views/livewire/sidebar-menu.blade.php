@@ -24,6 +24,11 @@
                 <li>
                     <a href="{{ route('destinos.index') }}" class="{{ request()->routeIs('destinos.*') ? 'accent-button w-full' : 'outline-button w-full' }}">Destinos</a>
                 </li>
+                @can('admin')
+                <li>
+                    <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'accent-button w-full' : 'outline-button w-full' }}">Usuarios</a>
+                </li>
+                @endcan
                 <li><span class="outline-button w-full justify-start opacity-70">Hospedajes (proximamente)</span></li>
                 <li><span class="outline-button w-full justify-start opacity-70">Viajes (proximamente)</span></li>
                 <li><span class="outline-button w-full justify-start opacity-70">Subtotales (proximamente)</span></li>
