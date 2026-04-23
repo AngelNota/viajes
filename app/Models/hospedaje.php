@@ -16,4 +16,8 @@ class hospedaje extends Model
         'tipo',
         'imagen',
     ];
+
+    protected $casts = [
+        'imagen' => 'array',
+    ];
 }

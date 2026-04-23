@@ -94,27 +94,50 @@
             </article>
         </section>
 
-        <section class="mt-8 reveal-up" style="animation-delay: 390ms;" aria-labelledby="recientes-titulo">
-            <div class="elevated-panel rounded-3xl p-6">
+        <section class="mt-8 grid gap-8 lg:grid-cols-2">
+            <article class="elevated-panel reveal-up rounded-3xl p-6" style="animation-delay: 390ms;" aria-labelledby="destinos-recientes-titulo">
                 <div class="mb-4 flex items-center justify-between gap-3">
-                    <h2 id="recientes-titulo" class="font-display text-3xl">Destinos recientes</h2>
-                    <a href="{{ route('destinos.index') }}" class="outline-button">Gestionar destinos</a>
+                    <h2 id="destinos-recientes-titulo" class="font-display text-3xl">Destinos recientes</h2>
+                    <a href="{{ route('destinos.index') }}" class="outline-button">Ver todos</a>
                 </div>
 
                 @if($destinosRecientes->isEmpty())
                     <p class="rounded-xl border border-dashed border-slate-300 bg-white/70 p-4 text-sm text-slate-600">Aun no hay destinos creados.</p>
                 @else
-                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        @foreach($destinosRecientes as $destino)
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        @foreach($destinosRecientes->take(4) as $destino)
                             <article class="rounded-2xl border border-white/80 bg-white/85 p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-                                <h3 class="font-display text-2xl text-slate-900">{{ $destino->nombre }}</h3>
-                                <p class="mt-1 text-sm font-semibold text-[var(--brand-teal)]">{{ $destino->ciudad }}, {{ $destino->pais }}</p>
-                                <p class="mt-2 text-sm text-slate-600">{{ $destino->direccion ?: 'Sin direccion especificada' }}</p>
+                                <h3 class="font-display text-xl text-slate-900">{{ $destino->nombre }}</h3>
+                                <p class="mt-1 text-xs font-semibold text-[var(--brand-teal)]">{{ $destino->ciudad }}, {{ $destino->pais }}</p>
                             </article>
                         @endforeach
                     </div>
                 @endif
-            </div>
+            </article>
+
+            <article class="elevated-panel reveal-up rounded-3xl p-6" style="animation-delay: 440ms;" aria-labelledby="hospedajes-recientes-titulo">
+                <div class="mb-4 flex items-center justify-between gap-3">
+                    <h2 id="hospedajes-recientes-titulo" class="font-display text-3xl">Hospedajes recientes</h2>
+                    <a href="{{ route('hospedajes.index') }}" class="outline-button">Ver todos</a>
+                </div>
+
+                @php
+                    $hospedajesRecientes = \App\Models\hospedaje::latest()->limit(4)->get();
+                @endphp
+
+                @if($hospedajesRecientes->isEmpty())
+                    <p class="rounded-xl border border-dashed border-slate-300 bg-white/70 p-4 text-sm text-slate-600">Aun no hay hospedajes creados.</p>
+                @else
+                    <div class="grid gap-4 sm:grid-cols-2">
+                        @foreach($hospedajesRecientes as $hospedaje)
+                            <article class="rounded-2xl border border-white/80 bg-white/85 p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+                                <h3 class="font-display text-xl text-slate-900">{{ $hospedaje->nombre }}</h3>
+                                <p class="mt-1 text-xs font-semibold text-[var(--brand-teal)]">{{ $hospedaje->tipo }} • {{ $hospedaje->capacidad }} pers.</p>
+                            </article>
+                        @endforeach
+                    </div>
+                @endif
+            </article>
         </section>
     </main>
 
