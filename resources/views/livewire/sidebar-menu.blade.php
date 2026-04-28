@@ -32,7 +32,9 @@
                     <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'accent-button w-full' : 'outline-button w-full' }}">Usuarios</a>
                 </li>
                 @endcan
-                <li><span class="outline-button w-full justify-start opacity-70">Viajes (proximamente)</span></li>
+                <li>
+                    <a href="{{ route('viajes.index') }}" class="{{ request()->routeIs('viajes.*') ? 'accent-button w-full' : 'outline-button w-full' }}">Viajes</a>
+                </li>
                 <li><span class="outline-button w-full justify-start opacity-70">Subtotales (proximamente)</span></li>
             </ul>
         </nav>

@@ -22,6 +22,7 @@
 			<a href="{{ route('dashboard') }}" class="outline-button">Dashboard</a>
 			<a href="{{ route('destinos.index') }}" class="outline-button">Destinos</a>
 			<a href="{{ route('hospedajes.index') }}" class="outline-button">Hospedajes</a>
+            <a href="{{ route('viajes.index') }}" class="outline-button">Viajes</a>
             @can('admin')
                 <a href="{{ route('users.index') }}" class="outline-button">Usuarios</a>
             @endcan

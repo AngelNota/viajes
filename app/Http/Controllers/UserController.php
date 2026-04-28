@@ -6,9 +6,12 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Mail;
 use App\Exports\UsersExport;
 use App\Imports\UsersImport;
+use App\Mail\WelcomeUser;
 use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class UserController extends Controller
 {
@@ -48,14 +51,22 @@ class UserController extends Controller
             'role' => 'required|string|in:user,admin',
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
         ]);
 
-        return redirect()->route('users.index')->with('success', 'Usuario creado exitosamente.');
+        // Enviar correo de bienvenida
+        try {
+            Mail::to($user->email)->send(new WelcomeUser($user, $validated['password']));
+        } catch (\Exception $e) {
+            // Loguear error o manejarlo si es necesario, pero no detener el flujo principal
+            \Illuminate\Support\Facades\Log::error("Error enviando correo a {$user->email}: " . $e->getMessage());
+        }
+
+        return redirect()->route('users.index')->with('success', 'Usuario creado exitosamente y correo de bienvenida enviado.');
     }
 
     /**
@@ -66,6 +77,21 @@ class UserController extends Controller
         Gate::authorize('admin');
 
         return Excel::download(new UsersExport, 'usuarios-viajes-atelier.xlsx');
+    }
+
+    /**
+     * Export users to PDF.
+     */
+    public function exportPdf()
+    {
+        Gate::authorize('admin');
+
+        $users = User::all();
+        $date = now()->translatedFormat('d F Y, H:i');
+        
+        $pdf = Pdf::loadView('users.pdf', compact('users', 'date'));
+        
+        return $pdf->download('usuarios-viajes-atelier.pdf');
     }
 
     /**
