@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Iniciar sesion</title>
+    <title>Iniciar sesión - Viajes Atelier</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="grain-overlay relative overflow-x-hidden">
@@ -12,7 +12,7 @@
             <div class="reveal-up">
                 <span class="soft-chip">Bitacora de Viajes</span>
                 <h1 class="font-display mt-5 text-5xl leading-tight text-slate-900 sm:text-6xl">
-                    Entrar para construir rutas con estilo editorial.
+                    Entra para construir rutas con estilo editorial.
                 </h1>
                 <p class="mt-5 max-w-xl text-lg text-slate-700">
                     Guarda destinos, visualiza lugares y organiza tu proximo viaje con una experiencia visual inmersiva.
@@ -31,7 +31,7 @@
             </div>
 
             <div class="elevated-panel reveal-up rounded-3xl p-6 sm:p-8" style="animation-delay: 120ms;">
-                <h2 class="font-display text-4xl">Iniciar sesion</h2>
+                <h2 class="font-display text-4xl">Iniciar sesión</h2>
                 <p class="mt-2 text-sm text-slate-600">Usa tus credenciales para entrar al panel de destinos.</p>
 
                 @if ($errors->any())
@@ -45,28 +45,12 @@
 
                     <div>
                         <label for="email" class="mb-1 block text-sm font-semibold text-slate-700">Correo</label>
-                        <input
-                            id="email"
-                            name="email"
-                            type="email"
-                            value="{{ old('email') }}"
-                            required
-                            autofocus
-                            autocomplete="email"
-                            class="w-full rounded-xl border border-slate-300 bg-white/90 px-3 py-2.5 focus:border-[var(--brand-teal)] focus:outline-none"
-                        >
+                        <input id="email" name="email" type="email" value="{{ old('email') }}" required autofocus autocomplete="email" class="w-full rounded-xl border border-slate-300 bg-white/90 px-3 py-2.5 focus:border-[var(--brand-teal)] focus:outline-none">
                     </div>
 
                     <div>
-                        <label for="password" class="mb-1 block text-sm font-semibold text-slate-700">Contrasena</label>
-                        <input
-                            id="password"
-                            name="password"
-                            type="password"
-                            required
-                            autocomplete="current-password"
-                            class="w-full rounded-xl border border-slate-300 bg-white/90 px-3 py-2.5 focus:border-[var(--brand-teal)] focus:outline-none"
-                        >
+                        <label for="password" class="mb-1 block text-sm font-semibold text-slate-700">Contraseña</label>
+                        <input id="password" name="password" type="password" required autocomplete="current-password" class="w-full rounded-xl border border-slate-300 bg-white/90 px-3 py-2.5 focus:border-[var(--brand-teal)] focus:outline-none">
                     </div>
 
                     <label class="flex items-center gap-2 text-sm text-slate-700">
@@ -79,6 +63,9 @@
                     </button>
                 </form>
 
+                <p class="mt-6 text-center text-sm text-slate-600">
+                    ¿No tienes cuenta? <a href="{{ route('register') }}" class="font-bold text-indigo-600 hover:underline">Regístrate</a>
+                </p>
                 <a href="{{ url('/') }}" class="outline-button mt-4 w-full">Volver al inicio</a>
             </div>
         </section>

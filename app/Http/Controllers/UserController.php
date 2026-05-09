@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
 use App\Exports\UsersExport;
 use App\Imports\UsersImport;
 use App\Mail\WelcomeUser;
@@ -62,11 +63,44 @@ class UserController extends Controller
         try {
             Mail::to($user->email)->send(new WelcomeUser($user, $validated['password']));
         } catch (\Exception $e) {
-            // Loguear error o manejarlo si es necesario, pero no detener el flujo principal
             \Illuminate\Support\Facades\Log::error("Error enviando correo a {$user->email}: " . $e->getMessage());
         }
 
         return redirect()->route('users.index')->with('success', 'Usuario creado exitosamente y correo de bienvenida enviado.');
+    }
+
+    /**
+     * RF-21: Show user profile
+     */
+    public function profile()
+    {
+        $user = Auth::user();
+        return view('users.profile', compact('user'));
+    }
+
+    /**
+     * RF-21: Update user profile
+     */
+    public function profileUpdate(Request $request)
+    {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'password' => 'nullable|string|min:8|confirmed',
+        ]);
+
+        $user->name = $validated['name'];
+        $user->phone = $validated['phone'];
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($validated['password']);
+        }
+
+        $user->save();
+
+        return back()->with('success', 'Perfil actualizado exitosamente.');
     }
 
     /**

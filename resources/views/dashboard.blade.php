@@ -125,10 +125,6 @@
                     <a href="{{ route('hospedajes.index') }}" class="outline-button">Ver todos</a>
                 </div>
 
-                @php
-                    $hospedajesRecientes = \App\Models\hospedaje::latest()->limit(4)->get();
-                @endphp
-
                 @if($hospedajesRecientes->isEmpty())
                     <p class="rounded-xl border border-dashed border-slate-300 bg-white/70 p-4 text-sm text-slate-600">Aun no hay hospedajes creados.</p>
                 @else
@@ -136,7 +132,7 @@
                         @foreach($hospedajesRecientes as $hospedaje)
                             <article class="rounded-2xl border border-white/80 bg-white/85 p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
                                 <h3 class="font-display text-xl text-slate-900">{{ $hospedaje->nombre }}</h3>
-                                <p class="mt-1 text-xs font-semibold text-[var(--brand-teal)]">{{ $hospedaje->tipo }} • {{ $hospedaje->capacidad }} pers.</p>
+                                <p class="mt-1 text-xs font-semibold text-[var(--brand-teal)]">{{ $hospedaje->tipo ?? $hospedaje->categoria }} • {{ $hospedaje->capacidad ?? $hospedaje->habitaciones_disp }} disp.</p>
                             </article>
                         @endforeach
                     </div>

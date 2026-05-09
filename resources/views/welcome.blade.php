@@ -26,6 +26,7 @@
                     </form>
                 @else
                     <a href="{{ route('login') }}" class="accent-button">Iniciar sesion</a>
+                    <a href="{{ route("register") }}" class="outline-button hidden sm:inline-flex">Registrarse</a>
                 @endauth
             </nav>
         </header>

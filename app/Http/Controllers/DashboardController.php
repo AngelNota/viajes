@@ -35,6 +35,9 @@ class DashboardController extends Controller
             ->get();
 
         $destinosRecientes = destino::latest()->limit(6)->get();
+        
+        // Refactor: Moving query from View to Controller
+        $hospedajesRecientes = hospedaje::latest()->limit(4)->get();
 
         $topPaises = destino::query()
             ->select('pais', DB::raw('COUNT(*) as total'))
@@ -55,6 +58,7 @@ class DashboardController extends Controller
             'gastoTotal',
             'proximosViajes',
             'destinosRecientes',
+            'hospedajesRecientes',
             'topPaises',
             'viajesMes'
         ));

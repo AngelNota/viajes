@@ -9,6 +9,12 @@
         <div class="mx-auto max-w-4xl sm:px-6 lg:px-8">
             <div class="overflow-hidden bg-white shadow-xl sm:rounded-3xl">
                 <div class="p-8">
+                    @if (session('success'))
+                        <div class="mb-4 rounded-lg bg-green-100 p-4 text-sm text-green-700" role="alert">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
                     <div class="mb-8 flex flex-col justify-between border-b border-gray-100 pb-8 md:flex-row">
                         <div>
                             <span class="text-xs font-bold uppercase tracking-widest text-indigo-500">Comprobante de Viaje</span>
@@ -18,7 +24,16 @@
                         <div class="mt-6 text-left md:mt-0 md:text-right">
                             <div class="text-xs font-bold uppercase tracking-widest text-gray-400">Folio de Reserva</div>
                             <div class="text-3xl font-black text-indigo-600">{{ $reservacion->folio }}</div>
-                            <div class="mt-2 inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-bold uppercase text-green-800">
+                            @php
+                                $colors = [
+                                    'pendiente' => 'bg-yellow-100 text-yellow-800',
+                                    'confirmado' => 'bg-green-100 text-green-800',
+                                    'completado' => 'bg-blue-100 text-blue-800',
+                                    'cancelado' => 'bg-red-100 text-red-800',
+                                ];
+                                $color = $colors[$reservacion->estado] ?? 'bg-gray-100 text-gray-800';
+                            @endphp
+                            <div class="mt-2 inline-flex rounded-full {{ $color }} px-3 py-1 text-xs font-bold uppercase">
                                 {{ $reservacion->estado }}
                             </div>
                         </div>
@@ -50,10 +65,16 @@
                             </div>
 
                             <div>
-                                <h3 class="text-sm font-bold uppercase tracking-wider text-gray-900">Alojamiento</h3>
-                                <div class="mt-2">
-                                    <p class="font-semibold text-gray-800">{{ $reservacion->viaje->hospedaje->nombre }}</p>
-                                    <p class="text-sm text-gray-600">{{ $reservacion->viaje->hospedaje->categoria }}</p>
+                                <h3 class="text-sm font-bold uppercase tracking-wider text-gray-900">Alojamiento y Transporte</h3>
+                                <div class="mt-2 space-y-3">
+                                    <div>
+                                        <p class="font-semibold text-gray-800">{{ $reservacion->viaje->hospedaje->nombre }}</p>
+                                        <p class="text-xs text-gray-500 uppercase">{{ $reservacion->viaje->hospedaje->categoria }}</p>
+                                    </div>
+                                    <div class="border-t border-gray-50 pt-2">
+                                        <p class="font-semibold text-gray-800">{{ $reservacion->viaje->transporte->tipo }}</p>
+                                        <p class="text-xs text-gray-500 uppercase">{{ $reservacion->viaje->transporte->origen }} → {{ $reservacion->viaje->transporte->destino }}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -78,25 +99,38 @@
                             </div>
 
                             <div class="mt-8 space-y-3">
-                                <a href="{{ route('reservaciones.pdf', $reservacion) }}" class="flex w-full items-center justify-center rounded-xl bg-indigo-600 px-6 py-3 text-sm font-bold text-white transition hover:bg-indigo-700 shadow-lg shadow-indigo-100">
-                                    <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                                    DESCARGAR TICKET (PDF)
-                                </a>
-                                <button onclick="window.print()" class="flex w-full items-center justify-center rounded-xl bg-gray-900 px-6 py-3 text-sm font-bold text-white transition hover:bg-black">
-                                    <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                                    IMPRIMIR RÁPIDO
-                                </button>
+                                @if($reservacion->estado !== 'cancelado')
+                                    <a href="{{ route('reservaciones.pdf', $reservacion) }}" class="flex w-full items-center justify-center rounded-xl bg-indigo-600 px-6 py-3 text-sm font-bold text-white transition hover:bg-indigo-700 shadow-lg shadow-indigo-100">
+                                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                        DESCARGAR TICKET (PDF)
+                                    </a>
+                                    
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <button onclick="window.print()" class="flex items-center justify-center rounded-xl bg-gray-900 px-4 py-3 text-xs font-bold text-white transition hover:bg-black">
+                                            IMPRIMIR
+                                        </button>
+
+                                        {{-- RF-13: Cancel button for user --}}
+                                        <form action="{{ route('reservaciones.update', $reservacion) }}" method="POST" onsubmit="return confirm('¿Estás seguro que deseas cancelar tu reservación? Esta acción es irreversible.')">
+                                            @csrf
+                                            @method('PUT')
+                                            <input type="hidden" name="estado" value="cancelado">
+                                            <button type="submit" class="w-full flex items-center justify-center rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs font-bold text-red-600 transition hover:bg-red-100">
+                                                CANCELAR VIAJE
+                                            </button>
+                                        </form>
+                                    </div>
+                                @else
+                                    <div class="rounded-xl bg-red-50 p-4 text-center">
+                                        <p class="text-sm font-bold text-red-600 uppercase">RESERVACIÓN CANCELADA</p>
+                                    </div>
+                                @endif
+
                                 <a href="{{ route('reservaciones.index') }}" class="flex w-full items-center justify-center rounded-xl border border-gray-200 bg-white px-6 py-3 text-sm font-bold text-gray-700 transition hover:bg-gray-50">
                                     VOLVER AL LISTADO
                                 </a>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="mt-12 rounded-2xl bg-indigo-50 p-6 text-center">
-                        <p class="text-xs font-medium text-indigo-700">
-                            Este PDF es tu comprobante oficial. Preséntalo al abordar o en el check-in del hotel.
-                        </p>
                     </div>
                 </div>
             </div>
@@ -105,7 +139,7 @@
 
     <style>
         @media print {
-            nav, .py-12 > div > div > div > div:last-child .mt-8 { display: none !important; }
+            nav, header, .py-12 > div > div > div > div:last-child .mt-8 { display: none !important; }
             .py-12 { padding-top: 0 !important; }
             .shadow-xl { shadow: none !important; }
             body { background: white !important; }

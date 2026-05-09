@@ -33,15 +33,17 @@ class transporteController extends Controller
     {
         Gate::authorize('admin');
 
-        $request->validate([
+        $validated = $request->validate([
             'tipo' => 'required|string|max:255',
             'origen' => 'required|string|max:255',
             'destino' => 'required|string|max:255',
             'capacidad' => 'required|integer|min:1',
             'precio' => 'required|numeric|min:0',
+            'fecha_salida' => 'required|date',
         ]);
 
-        transporte::create($request->all());
+        // Security fix: using $validated instead of $request->all()
+        transporte::create($validated);
 
         return redirect()->route('transportes.index')
                         ->with('success', 'Transporte creado exitosamente.');
@@ -71,15 +73,17 @@ class transporteController extends Controller
     {
         Gate::authorize('admin');
 
-        $request->validate([
+        $validated = $request->validate([
             'tipo' => 'required|string|max:255',
             'origen' => 'required|string|max:255',
             'destino' => 'required|string|max:255',
             'capacidad' => 'required|integer|min:1',
             'precio' => 'required|numeric|min:0',
+            'fecha_salida' => 'required|date',
         ]);
 
-        $transporte->update($request->all());
+        // Security fix: using $validated instead of $request->all()
+        $transporte->update($validated);
 
         return redirect()->route('transportes.index')
                         ->with('success', 'Transporte actualizado exitosamente.');

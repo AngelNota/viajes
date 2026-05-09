@@ -36,8 +36,16 @@
                 <li>
                     <a href="{{ route('reservaciones.index') }}" class="{{ request()->routeIs('reservaciones.*') ? 'accent-button w-full' : 'outline-button w-full' }}">Reservaciones</a>
                 </li>
-                @can('admin')
+                
                 <div class="pt-4 mt-4 border-t border-slate-200">
+                    <p class="text-[10px] uppercase tracking-widest text-slate-400 mb-2 px-2">Cuenta</p>
+                    <li>
+                        <a href="{{ route('profile.edit') }}" class="{{ request()->routeIs('profile.*') ? 'accent-button w-full' : 'outline-button w-full' }}">Mi Perfil</a>
+                    </li>
+                </div>
+
+                @can('admin')
+                <div class="pt-4 mt-2 border-t border-slate-200">
                     <p class="text-[10px] uppercase tracking-widest text-slate-400 mb-2 px-2">Administración</p>
                     <li>
                         <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'accent-button w-full' : 'outline-button w-full' }}">Usuarios</a>
@@ -48,7 +56,8 @@
         </nav>
 
         <div class="mt-8 rounded-xl border border-slate-300/60 bg-white/70 p-4 text-sm text-slate-600">
-            Bienvenido al panel de tu Agencia de Viajes. Gestiona tus rutas y reservaciones con un solo clic.
+            {{ Auth::user()->name }}<br>
+            <span class="text-[10px] uppercase font-bold text-slate-400">{{ Auth::user()->role }}</span>
         </div>
     </div>
 </aside>

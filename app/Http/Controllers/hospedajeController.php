@@ -6,9 +6,12 @@ use Illuminate\Http\Request;
 use App\Models\hospedaje;
 use App\Models\destino;
 use Illuminate\Support\Facades\Gate;
+use App\Traits\UploadsImages;
 
 class hospedajeController extends Controller
 {
+    use UploadsImages;
+
     /**
      * Display a listing of the resource.
      */
@@ -46,13 +49,8 @@ class hospedajeController extends Controller
 
         $data = $request->only(['destino_id', 'nombre', 'categoria', 'precio_noche', 'habitaciones_disp']);
 
-        if ($request->hasFile('imagen')) {
-            $imagenes = [];
-            foreach ($request->file('imagen') as $file) {
-                $imagenes[] = $file->store('hospedajes', 'public');
-            }
-            $data['imagen'] = json_encode($imagenes);
-        }
+        // Refactor: Using Trait logic
+        $data['imagen'] = $this->uploadMultipleImages($request, 'imagen', 'hospedajes');
 
         hospedaje::create($data);
 
@@ -97,12 +95,10 @@ class hospedajeController extends Controller
 
         $data = $request->only(['destino_id', 'nombre', 'categoria', 'precio_noche', 'habitaciones_disp']);
 
-        if ($request->hasFile('imagen')) {
-            $imagenes = [];
-            foreach ($request->file('imagen') as $file) {
-                $imagenes[] = $file->store('hospedajes', 'public');
-            }
-            $data['imagen'] = json_encode($imagenes);
+        // Refactor: Using Trait logic
+        $newImages = $this->uploadMultipleImages($request, 'imagen', 'hospedajes');
+        if ($newImages) {
+            $data['imagen'] = $newImages;
         }
 
         $hospedaje->update($data);

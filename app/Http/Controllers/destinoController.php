@@ -5,16 +5,53 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\destino;
 use Illuminate\Support\Facades\Gate;
+use App\Traits\UploadsImages;
 
 class destinoController extends Controller
 {
+    use UploadsImages;
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $destinos = destino::all();
-        return view('destinos.index', compact('destinos'));
+        $query = destino::query();
+
+        // RF-03: Filter by Search
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nombre', 'LIKE', "%{$search}%")
+                  ->orWhere('pais', 'LIKE', "%{$search}%")
+                  ->orWhere('descripcion', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // RF-03: Filter by Country
+        if ($request->filled('pais')) {
+            $query->where('pais', $request->pais);
+        }
+
+        // RF-03: Filter by Availability (Active)
+        if ($request->filled('disponible')) {
+            if ($request->disponible == '1') $query->where('activo', true);
+            if ($request->disponible == '0') $query->where('activo', false);
+        }
+
+        // RF-03: Sort logic
+        if ($request->filled('sort')) {
+            if ($request->sort === 'price_asc') $query->orderBy('precio_base', 'asc');
+            elseif ($request->sort === 'price_desc') $query->orderBy('precio_base', 'desc');
+            elseif ($request->sort === 'popular') $query->withCount('viajes')->orderBy('viajes_count', 'desc');
+        } else {
+            $query->latest();
+        }
+
+        $destinos = $query->get();
+        $paises = destino::select('pais')->distinct()->pluck('pais');
+
+        return view('destinos.index', compact('destinos', 'paises'));
     }
 
     /**
@@ -44,13 +81,7 @@ class destinoController extends Controller
         $data = $request->only(['nombre', 'pais', 'descripcion', 'precio_base']);
         $data['activo'] = $request->has('activo');
 
-        if ($request->hasFile('imagen')) {
-            $imagenes = [];
-            foreach ($request->file('imagen') as $file) {
-                $imagenes[] = $file->store('destinos', 'public');
-            }
-            $data['imagen'] = json_encode($imagenes);
-        }
+        $data['imagen'] = $this->uploadMultipleImages($request, 'imagen', 'destinos');
 
         destino::create($data);
 
@@ -93,12 +124,9 @@ class destinoController extends Controller
         $data = $request->only(['nombre', 'pais', 'descripcion', 'precio_base']);
         $data['activo'] = $request->has('activo');
 
-        if ($request->hasFile('imagen')) {
-            $imagenes = [];
-            foreach ($request->file('imagen') as $file) {
-                $imagenes[] = $file->store('destinos', 'public');
-            }
-            $data['imagen'] = json_encode($imagenes);
+        $newImages = $this->uploadMultipleImages($request, 'imagen', 'destinos');
+        if ($newImages) {
+            $data['imagen'] = $newImages;
         }
 
         $destino->update($data);
