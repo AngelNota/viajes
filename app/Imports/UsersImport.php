@@ -16,13 +16,14 @@ class UsersImport implements ToModel, WithHeadingRow
     */
     public function model(array $row)
     {
-        // Se espera un Excel con las cabeceras: nombre, email, rol, password
-        // Si no hay password, se asigna uno por defecto '12345678'
+        // El documento pide columnas: nombre, correo, teléfono, fecha_nacimiento
         return new User([
-            'name'     => $row['nombre'],
-            'email'    => $row['email'],
-            'role'     => $row['rol'] ?? 'user',
-            'password' => Hash::make($row['password'] ?? '12345678'),
+            'name'             => $row['nombre'],
+            'email'            => $row['correo'],
+            'phone'            => $row['telefono'] ?? null,
+            'fecha_nacimiento' => $row['fecha_nacimiento'] ?? null,
+            'role'             => $row['rol'] ?? 'user',
+            'password'         => Hash::make($row['password'] ?? '12345678'),
         ]);
     }
 }

@@ -5,23 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class destino extends Model
+class transporte extends Model
 {
     use SoftDeletes;
 
     protected $fillable = [
-        'nombre',
-        'pais',
-        'descripcion',
-        'imagen',
-        'precio_base',
-        'activo',
+        'tipo',
+        'origen',
+        'destino',
+        'capacidad',
+        'precio',
+        'fecha_salida',
     ];
-
-    public function hospedajes()
-    {
-        return $this->hasMany(hospedaje::class);
-    }
 
     public function viajes()
     {

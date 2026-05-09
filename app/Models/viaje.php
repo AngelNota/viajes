@@ -10,30 +10,33 @@ class viaje extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'user_id',
+        'nombre',
         'destino_id',
         'hospedaje_id',
         'transporte_id',
         'fecha_inicio',
         'fecha_fin',
-        'num_personas',
-        'tipo_viaje',
-        'subtotal_id',
-        'total',
+        'precio_total',
+        'capacidad',
     ];
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
 
     public function destino()
     {
-        return $this->belongsTo(Destino::class);
+        return $this->belongsTo(destino::class);
     }
 
     public function hospedaje()
     {
-        return $this->belongsTo(Hospedaje::class);
-    }    
+        return $this->belongsTo(hospedaje::class);
+    }
+
+    public function transporte()
+    {
+        return $this->belongsTo(transporte::class);
+    }
+
+    public function reservaciones()
+    {
+        return $this->hasMany(Reservacion::class);
+    }
 }

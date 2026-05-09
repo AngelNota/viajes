@@ -10,8 +10,8 @@
     <div class="elevated-panel m-3 h-[calc(100%-1.5rem)] rounded-2xl p-5">
         <div class="mb-6 flex items-center justify-between">
             <div>
-                <h3 class="font-display text-2xl">Menu</h3>
-                <p class="text-xs uppercase tracking-[0.17em] text-slate-500">Navegacion</p>
+                <h3 class="font-display text-2xl">Menú</h3>
+                <p class="text-xs uppercase tracking-[0.17em] text-slate-500">Navegación</p>
             </div>
             <button wire:click="toggle" class="outline-button">Cerrar</button>
         </div>
@@ -27,20 +27,28 @@
                 <li>
                     <a href="{{ route('hospedajes.index') }}" class="{{ request()->routeIs('hospedajes.*') ? 'accent-button w-full' : 'outline-button w-full' }}">Hospedajes</a>
                 </li>
+                <li>
+                    <a href="{{ route('transportes.index') }}" class="{{ request()->routeIs('transportes.*') ? 'accent-button w-full' : 'outline-button w-full' }}">Transportes</a>
+                </li>
+                <li>
+                    <a href="{{ route('viajes.index') }}" class="{{ request()->routeIs('viajes.*') ? 'accent-button w-full' : 'outline-button w-full' }}">Paquetes de Viaje</a>
+                </li>
+                <li>
+                    <a href="{{ route('reservaciones.index') }}" class="{{ request()->routeIs('reservaciones.*') ? 'accent-button w-full' : 'outline-button w-full' }}">Reservaciones</a>
+                </li>
                 @can('admin')
-                <li>
-                    <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'accent-button w-full' : 'outline-button w-full' }}">Usuarios</a>
-                </li>
+                <div class="pt-4 mt-4 border-t border-slate-200">
+                    <p class="text-[10px] uppercase tracking-widest text-slate-400 mb-2 px-2">Administración</p>
+                    <li>
+                        <a href="{{ route('users.index') }}" class="{{ request()->routeIs('users.*') ? 'accent-button w-full' : 'outline-button w-full' }}">Usuarios</a>
+                    </li>
+                </div>
                 @endcan
-                <li>
-                    <a href="{{ route('viajes.index') }}" class="{{ request()->routeIs('viajes.*') ? 'accent-button w-full' : 'outline-button w-full' }}">Viajes</a>
-                </li>
-                <li><span class="outline-button w-full justify-start opacity-70">Subtotales (proximamente)</span></li>
             </ul>
         </nav>
 
         <div class="mt-8 rounded-xl border border-slate-300/60 bg-white/70 p-4 text-sm text-slate-600">
-            Tip rapido: crea destinos con fotos para construir tu bitacora visual de viajes.
+            Bienvenido al panel de tu Agencia de Viajes. Gestiona tus rutas y reservaciones con un solo clic.
         </div>
     </div>
 </aside>

@@ -1,99 +1,103 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Viajes - Viajes Atelier</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
-<body class="grain-overlay relative overflow-x-hidden">
-    <x-header />
-
-    <main class="relative z-10 mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
-        <section class="mb-8 mt-2 flex flex-col items-start justify-between gap-6 rounded-3xl border border-white/70 bg-white/55 px-6 py-8 shadow-[0_14px_40px_rgba(15,111,121,0.15)] backdrop-blur-sm reveal-up sm:flex-row sm:items-center">
-            <div>
-                <span class="soft-chip">Exploración</span>
-                <h1 class="font-display mt-4 text-4xl leading-tight text-slate-900 sm:text-5xl">@if(Auth::user()->isAdmin()) Gestión de Viajes @else Mis Viajes @endif</h1>
-                <p class="mt-2 text-slate-700">@if(Auth::user()->isAdmin()) Administra las expediciones y aventuras programadas. @else Consulta y gestiona tus próximas aventuras. @endif</p>
-            </div>
-            <div class="flex flex-wrap gap-3">
-                <a href="{{ route('viajes.create') }}" class="accent-button flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-circle"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="16"/><line x1="8" x2="16" y1="12" y2="12"/></svg>
-                    Nuevo Viaje
+<x-app-layout>
+    <x-slot name="header">
+        <div class="flex items-center justify-between">
+            <h2 class="text-xl font-semibold leading-tight text-gray-800">
+                {{ __('Catálogo de Paquetes de Viaje') }}
+            </h2>
+            @can('admin')
+                <a href="{{ route('viajes.create') }}" class="inline-flex items-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-indigo-700 focus:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-indigo-900">
+                    {{ __('Nuevo Paquete') }}
                 </a>
-            </div>
-        </section>
-
-        @if(session('success'))
-            <div class="mb-6 rounded-2xl border border-green-200 bg-green-50 p-4 text-green-700 shadow-sm">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            @forelse($viajes as $viaje)
-                <article class="elevated-panel reveal-up group overflow-hidden rounded-3xl transition-all hover:shadow-2xl">
-                    <div class="relative h-48 w-full overflow-hidden bg-slate-200">
-                        @php $imagen = is_array($viaje->destino->imagen) ? $viaje->destino->imagen[0] : null; @endphp
-                        @if($imagen)
-                            <img src="{{ asset('storage/' . $imagen) }}" alt="{{ $viaje->destino->nombre }}" class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110">
-                        @else
-                            <div class="flex h-full w-full items-center justify-center bg-slate-100 text-slate-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                            </div>
-                        @endif
-                        <div class="absolute right-4 top-4">
-                            <span class="rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-[var(--brand-teal)] backdrop-blur-md">
-                                {{ $viaje->tipo_viaje }}
-                            </span>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <div class="mb-4 flex items-center justify-between">
-                            <h2 class="font-display text-2xl text-slate-900">{{ $viaje->destino->nombre }}</h2>
-                            <span class="text-lg font-bold text-[var(--brand-teal)]">${{ number_format($viaje->total, 2) }}</span>
-                        </div>
-                        
-                        <div class="mb-6 space-y-2 text-sm text-slate-600">
-                            <p class="flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                                {{ $viaje->user->name }}
-                            </p>
-                            <p class="flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-                                {{ \Carbon\Carbon::parse($viaje->fecha_inicio)->translatedFormat('d M') }} - {{ \Carbon\Carbon::parse($viaje->fecha_fin)->translatedFormat('d M Y') }}
-                            </p>
-                            <p class="flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                                {{ $viaje->num_personas }} personas
-                            </p>
-                        </div>
-
-                        <div class="flex gap-2">
-                            @if(Auth::user()->isAdmin() || $viaje->user_id === Auth::id())
-                            <a href="{{ route('viajes.edit', $viaje) }}" class="flex-1 rounded-xl border border-slate-200 py-2 text-center text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-50">
-                                Editar
-                            </a>
-                            <form action="{{ route('viajes.destroy', $viaje) }}" method="POST" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" onclick="return confirm('¿Estás seguro?')" class="rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-red-600 transition-colors hover:bg-red-100">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
-                                </button>
-                            </form>
-                            @endif
-                        </div>
-                    </div>
-                </article>
-            @empty
-                <div class="col-span-full py-20 text-center">
-                    <p class="text-slate-500">No hay viajes registrados aún.</p>
-                </div>
-            @endforelse
+            @endcan
         </div>
-    </main>
+    </x-slot>
 
-    <div class="pointer-events-none fixed -right-16 top-20 h-64 w-64 rounded-full bg-[var(--brand-mint)]/30 blur-3xl"></div>
-    <div class="pointer-events-none fixed -left-16 bottom-10 h-72 w-72 rounded-full bg-[var(--brand-coral)]/30 blur-3xl"></div>
-</body>
-</html>
+    <div class="py-12">
+        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+                    @if (session('success'))
+                        <div class="mb-4 rounded-lg bg-green-100 p-4 text-sm text-green-700" role="alert">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                    @if (session('error'))
+                        <div class="mb-4 rounded-lg bg-red-100 p-4 text-sm text-red-700" role="alert">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
+                    <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                        @forelse($viajes as $viaje)
+                            <div class="flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:shadow-xl">
+                                @php
+                                    $imagenes = json_decode($viaje->destino->imagen, true) ?? [];
+                                    $primeraImagen = !empty($imagenes) ? asset('storage/' . $imagenes[0]) : 'https://via.placeholder.com/400x250?text=' . urlencode($viaje->destino->nombre);
+                                @endphp
+                                <div class="relative">
+                                    <img src="{{ $primeraImagen }}" alt="{{ $viaje->nombre }}" class="h-56 w-full object-cover">
+                                    <div class="absolute top-4 right-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-gray-900 shadow-sm backdrop-blur-md">
+                                        {{ $viaje->destino->pais }}
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-1 flex-col p-6">
+                                    <h3 class="mb-2 text-xl font-bold text-gray-900">{{ $viaje->nombre }}</h3>
+                                    
+                                    <div class="mb-4 space-y-2 text-sm text-gray-600">
+                                        <div class="flex items-center">
+                                            <svg class="mr-2 h-4 w-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                                            {{ $viaje->hospedaje->nombre }} ({{ $viaje->hospedaje->categoria }})
+                                        </div>
+                                        <div class="flex items-center">
+                                            <svg class="mr-2 h-4 w-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            {{ \Carbon\Carbon::parse($viaje->fecha_inicio)->format('d M') }} - {{ \Carbon\Carbon::parse($viaje->fecha_fin)->format('d M, Y') }}
+                                        </div>
+                                        <div class="flex items-center">
+                                            <svg class="mr-2 h-4 w-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                                            {{ $viaje->capacidad - $viaje->reservaciones()->count() }} lugares disponibles
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-auto flex items-center justify-between border-t border-gray-100 pt-4">
+                                        <div class="flex flex-col">
+                                            <span class="text-xs font-medium text-gray-400 uppercase tracking-wider">Precio total</span>
+                                            <span class="text-2xl font-black text-gray-900">${{ number_format($viaje->precio_total, 2) }}</span>
+                                        </div>
+                                        
+                                        @if($viaje->reservaciones()->count() < $viaje->capacidad)
+                                            <form action="{{ route('reservaciones.store') }}" method="POST">
+                                                @csrf
+                                                <input type="hidden" name="viaje_id" value="{{ $viaje->id }}">
+                                                <button type="submit" class="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-bold text-white shadow-lg shadow-indigo-200 transition-all hover:bg-indigo-700 active:scale-95">
+                                                    Comprar
+                                                </button>
+                                            </form>
+                                        @else
+                                            <span class="rounded-xl bg-gray-100 px-4 py-2 text-sm font-bold text-gray-400">Agotado</span>
+                                        @endif
+                                    </div>
+
+                                    @can('admin')
+                                        <div class="mt-4 flex space-x-3 pt-4 border-t border-gray-50">
+                                            <a href="{{ route('viajes.edit', $viaje) }}" class="text-xs font-bold text-indigo-600 hover:text-indigo-900">EDITAR</a>
+                                            <form action="{{ route('viajes.destroy', $viaje) }}" method="POST" onsubmit="return confirm('¿Eliminar este paquete?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-xs font-bold text-red-600 hover:text-red-900">ELIMINAR</button>
+                                            </form>
+                                        </div>
+                                    @endcan
+                                </div>
+                            </div>
+                        @empty
+                            <div class="col-span-full py-24 text-center">
+                                <p class="text-xl text-gray-500">No hay paquetes de viaje disponibles en este momento.</p>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</x-app-layout>

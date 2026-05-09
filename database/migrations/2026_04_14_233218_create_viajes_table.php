@@ -13,16 +13,14 @@ return new class extends Migration
     {
         Schema::create('viajes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('nombre');
             $table->foreignId('destino_id')->constrained('destinos')->onDelete('cascade');
             $table->foreignId('hospedaje_id')->constrained('hospedajes')->onDelete('cascade');
-            $table->bigInteger('transporte_id')->unsigned()->nullable();
+            $table->foreignId('transporte_id')->nullable()->constrained('transportes')->onDelete('set null');
             $table->date('fecha_inicio');
             $table->date('fecha_fin');
-            $table->integer('num_personas');
-            $table->string('tipo_viaje');
-            $table->foreignId('subtotal_id')->constrained('subtotals')->onDelete('cascade');
-            $table->decimal('total', 10, 2);
+            $table->decimal('precio_total', 10, 2);
+            $table->integer('capacidad');
             $table->timestamps();
             $table->softDeletes();
         });

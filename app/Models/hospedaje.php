@@ -10,14 +10,21 @@ class hospedaje extends Model
     use SoftDeletes;
 
     protected $fillable = [
+        'destino_id',
         'nombre',
-        'direccion',
-        'capacidad',
-        'tipo',
+        'categoria',
+        'precio_noche',
+        'habitaciones_disp',
         'imagen',
     ];
 
-    protected $casts = [
-        'imagen' => 'array',
-    ];
+    public function destino()
+    {
+        return $this->belongsTo(destino::class);
+    }
+
+    public function viajes()
+    {
+        return $this->hasMany(viaje::class);
+    }
 }

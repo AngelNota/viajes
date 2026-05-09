@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('hospedajes', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('destino_id')->constrained('destinos')->onDelete('cascade');
             $table->string('nombre');
-            $table->string('direccion');
-            $table->integer('capacidad');
-            $table->string('tipo');
+            $table->string('categoria');
+            $table->decimal('precio_noche', 10, 2);
+            $table->integer('habitaciones_disp');
             $table->string('imagen')->nullable();
             $table->timestamps();
             $table->softDeletes();

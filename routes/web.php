@@ -31,7 +31,9 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('destinos', destinoController::class);
     Route::resource('hospedajes', hospedajeController::class);
+    Route::resource('transportes', transporteController::class);
     Route::resource('viajes', ViajeController::class);
+    Route::resource('reservaciones', ReservacionController::class);
 
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UserController::class, 'create'])->name('users.create');

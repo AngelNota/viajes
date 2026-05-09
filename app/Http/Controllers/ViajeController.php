@@ -5,10 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\viaje;
 use App\Models\destino;
 use App\Models\hospedaje;
-use App\Models\subtotal;
-use App\Models\User;
+use App\Models\transporte;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class ViajeController extends Controller
@@ -18,13 +16,7 @@ class ViajeController extends Controller
      */
     public function index()
     {
-        $query = viaje::with(['user', 'destino', 'hospedaje']);
-
-        if (!Auth::user()->isAdmin()) {
-            $query->where('user_id', Auth::id());
-        }
-
-        $viajes = $query->latest()->get();
+        $viajes = viaje::with(['destino', 'hospedaje', 'transporte'])->latest()->get();
         return view('viajes.index', compact('viajes'));
     }
 
@@ -33,16 +25,12 @@ class ViajeController extends Controller
      */
     public function create()
     {
-        $destinos = destino::all();
+        Gate::authorize('admin');
+        $destinos = destino::where('activo', true)->get();
         $hospedajes = hospedaje::all();
+        $transportes = transporte::all();
         
-        if (Auth::user()->isAdmin()) {
-            $usuarios = User::all();
-        } else {
-            $usuarios = collect([Auth::user()]);
-        }
-        
-        return view('viajes.create', compact('destinos', 'hospedajes', 'usuarios'));
+        return view('viajes.create', compact('destinos', 'hospedajes', 'transportes'));
     }
 
     /**
@@ -50,32 +38,22 @@ class ViajeController extends Controller
      */
     public function store(Request $request)
     {
+        Gate::authorize('admin');
+
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
+            'nombre' => 'required|string|max:255',
             'destino_id' => 'required|exists:destinos,id',
             'hospedaje_id' => 'required|exists:hospedajes,id',
+            'transporte_id' => 'required|exists:transportes,id',
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
-            'num_personas' => 'required|integer|min:1',
-            'tipo_viaje' => 'required|string',
-            'total' => 'required|numeric|min:0',
+            'precio_total' => 'required|numeric|min:0',
+            'capacidad' => 'required|integer|min:1',
         ]);
-
-        // Security check: if not admin, user_id must be the authenticated user
-        if (!Auth::user()->isAdmin() && $validated['user_id'] != Auth::id()) {
-            abort(403);
-        }
-
-        // Crear un subtotal ficticio o real según tu lógica de negocio
-        $subtotal = subtotal::create([
-            'costo' => $validated['total'],
-        ]);
-
-        $validated['subtotal_id'] = $subtotal->id;
 
         viaje::create($validated);
 
-        return redirect()->route('viajes.index')->with('success', 'Viaje creado exitosamente.');
+        return redirect()->route('viajes.index')->with('success', 'Paquete de viaje creado exitosamente.');
     }
 
     /**
@@ -83,11 +61,7 @@ class ViajeController extends Controller
      */
     public function show(viaje $viaje)
     {
-        if (!Auth::user()->isAdmin() && $viaje->user_id !== Auth::id()) {
-            abort(403);
-        }
-
-        $viaje->load(['user', 'destino', 'hospedaje']);
+        $viaje->load(['destino', 'hospedaje', 'transporte']);
         return view('viajes.show', compact('viaje'));
     }
 
@@ -96,20 +70,12 @@ class ViajeController extends Controller
      */
     public function edit(viaje $viaje)
     {
-        if (!Auth::user()->isAdmin() && $viaje->user_id !== Auth::id()) {
-            abort(403);
-        }
-
-        $destinos = destino::all();
+        Gate::authorize('admin');
+        $destinos = destino::where('activo', true)->get();
         $hospedajes = hospedaje::all();
-        
-        if (Auth::user()->isAdmin()) {
-            $usuarios = User::all();
-        } else {
-            $usuarios = collect([Auth::user()]);
-        }
+        $transportes = transporte::all();
 
-        return view('viajes.edit', compact('viaje', 'destinos', 'hospedajes', 'usuarios'));
+        return view('viajes.edit', compact('viaje', 'destinos', 'hospedajes', 'transportes'));
     }
 
     /**
@@ -117,29 +83,22 @@ class ViajeController extends Controller
      */
     public function update(Request $request, viaje $viaje)
     {
-        if (!Auth::user()->isAdmin() && $viaje->user_id !== Auth::id()) {
-            abort(403);
-        }
+        Gate::authorize('admin');
 
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
+            'nombre' => 'required|string|max:255',
             'destino_id' => 'required|exists:destinos,id',
             'hospedaje_id' => 'required|exists:hospedajes,id',
+            'transporte_id' => 'required|exists:transportes,id',
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
-            'num_personas' => 'required|integer|min:1',
-            'tipo_viaje' => 'required|string',
-            'total' => 'required|numeric|min:0',
+            'precio_total' => 'required|numeric|min:0',
+            'capacidad' => 'required|integer|min:1',
         ]);
-
-        // Security check: if not admin, user_id must remain the owner or be the authenticated user
-        if (!Auth::user()->isAdmin() && $validated['user_id'] != Auth::id()) {
-            abort(403);
-        }
 
         $viaje->update($validated);
 
-        return redirect()->route('viajes.index')->with('success', 'Viaje actualizado exitosamente.');
+        return redirect()->route('viajes.index')->with('success', 'Paquete de viaje actualizado exitosamente.');
     }
 
     /**
@@ -147,11 +106,8 @@ class ViajeController extends Controller
      */
     public function destroy(viaje $viaje)
     {
-        if (!Auth::user()->isAdmin() && $viaje->user_id !== Auth::id()) {
-            abort(403);
-        }
-
+        Gate::authorize('admin');
         $viaje->delete();
-        return redirect()->route('viajes.index')->with('success', 'Viaje eliminado exitosamente.');
+        return redirect()->route('viajes.index')->with('success', 'Paquete de viaje eliminado exitosamente.');
     }
 }

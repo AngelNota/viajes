@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('destinos', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
-            $table->string('ciudad');
             $table->string('pais');
-            $table->string('direccion')->nullable();
+            $table->text('descripcion')->nullable();
             $table->string('imagen')->nullable();
+            $table->decimal('precio_base', 10, 2)->default(0);
+            $table->boolean('activo')->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

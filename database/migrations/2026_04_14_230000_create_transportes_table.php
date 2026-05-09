@@ -11,10 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('subtotals', function (Blueprint $table) {
+        Schema::create('transportes', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('concepto_id')->unsigned()->nullable();
-            $table->decimal('costo', 10, 2);
+            $table->string('tipo'); // autobus, avion, tren, barco
+            $table->string('origen');
+            $table->string('destino');
+            $table->integer('capacidad');
+            $table->decimal('precio', 10, 2);
+            $table->dateTime('fecha_salida');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -25,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('subtotals');
+        Schema::dropIfExists('transportes');
     }
 };
