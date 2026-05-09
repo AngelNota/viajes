@@ -20,7 +20,7 @@ class ReservacionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $query = Reservacion::with(['user', 'viaje.destino']);
 
@@ -28,8 +28,26 @@ class ReservacionController extends Controller
             $query->where('user_id', Auth::id());
         }
 
+        // RF-12: Search by Folio or Travel Name
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('folio', 'LIKE', "%{$search}%")
+                  ->orWhereHas('viaje', function($vq) use ($search) {
+                      $vq->where('nombre', 'LIKE', "%{$search}%");
+                  });
+            });
+        }
+
+        // RF-12: Filter by Status
+        if ($request->filled('estado')) {
+            $query->where('estado', $request->estado);
+        }
+
         $reservaciones = $query->latest()->get();
-        return view('reservaciones.index', compact('reservaciones'));
+        $estados = ['pendiente', 'confirmado', 'completado', 'cancelado'];
+
+        return view('reservaciones.index', compact('reservaciones', 'estados'));
     }
 
     /**
@@ -152,7 +170,6 @@ class ReservacionController extends Controller
             'estado' => 'required|string|in:pendiente,confirmado,completado,cancelado',
         ]);
 
-        // RF-13: Security - If user is owner but not admin, they can ONLY set state to 'cancelado'
         if (!$isAdmin && $request->estado !== 'cancelado') {
             return back()->with('error', 'No tienes permiso para cambiar el estado a algo diferente de cancelado.');
         }

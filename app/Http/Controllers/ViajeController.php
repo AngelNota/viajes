@@ -14,10 +14,35 @@ class ViajeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $viajes = viaje::with(['destino', 'hospedaje', 'transporte'])->latest()->get();
-        return view('viajes.index', compact('viajes'));
+        $query = viaje::with(['destino', 'hospedaje', 'transporte']);
+
+        // Search by name or destination name
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nombre', 'LIKE', "%{$search}%")
+                  ->orWhereHas('destino', function($dq) use ($search) {
+                      $dq->where('nombre', 'LIKE', "%{$search}%");
+                  });
+            });
+        }
+
+        // Filter by destination
+        if ($request->filled('destino_id')) {
+            $query->where('destino_id', $request->destino_id);
+        }
+
+        // Filter by Price range
+        if ($request->filled('max_price')) {
+            $query->where('precio_total', '<=', $request->max_price);
+        }
+
+        $viajes = $query->latest()->get();
+        $destinos = destino::where('activo', true)->get();
+
+        return view('viajes.index', compact('viajes', 'destinos'));
     }
 
     /**

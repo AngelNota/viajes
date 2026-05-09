@@ -11,10 +11,28 @@ class transporteController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $transportes = transporte::all();
-        return view('transportes.index', compact('transportes'));
+        $query = transporte::query();
+
+        // Search by origin or destination
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('origen', 'LIKE', "%{$search}%")
+                  ->orWhere('destino', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Filter by type
+        if ($request->filled('tipo')) {
+            $query->where('tipo', $request->tipo);
+        }
+
+        $transportes = $query->latest()->get();
+        $tipos = transporte::select('tipo')->distinct()->pluck('tipo');
+
+        return view('transportes.index', compact('transportes', 'tipos'));
     }
 
     /**
@@ -42,7 +60,6 @@ class transporteController extends Controller
             'fecha_salida' => 'required|date',
         ]);
 
-        // Security fix: using $validated instead of $request->all()
         transporte::create($validated);
 
         return redirect()->route('transportes.index')
@@ -82,7 +99,6 @@ class transporteController extends Controller
             'fecha_salida' => 'required|date',
         ]);
 
-        // Security fix: using $validated instead of $request->all()
         $transporte->update($validated);
 
         return redirect()->route('transportes.index')

@@ -15,10 +15,30 @@ class hospedajeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $hospedajes = hospedaje::with('destino')->get();
-        return view('hospedajes.index', compact('hospedajes'));
+        $query = hospedaje::with('destino');
+
+        // Search by name
+        if ($request->filled('search')) {
+            $query->where('nombre', 'LIKE', "%{$request->search}%");
+        }
+
+        // Filter by category
+        if ($request->filled('categoria')) {
+            $query->where('categoria', $request->categoria);
+        }
+
+        // Filter by destination
+        if ($request->filled('destino_id')) {
+            $query->where('destino_id', $request->destino_id);
+        }
+
+        $hospedajes = $query->latest()->get();
+        $categorias = hospedaje::select('categoria')->distinct()->pluck('categoria');
+        $destinos = destino::all();
+
+        return view('hospedajes.index', compact('hospedajes', 'categorias', 'destinos'));
     }
 
     /**
