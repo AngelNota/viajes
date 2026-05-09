@@ -1,76 +1,81 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Hospedaje - Viajes</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @livewireStyles
-</head>
-<body class="grain-overlay relative overflow-x-hidden">
-    <x-header />
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="text-xl font-semibold leading-tight text-gray-800">
+            {{ __('Editar Hospedaje') }}: {{ $hospedaje->nombre }}
+        </h2>
+    </x-slot>
 
-    <main class="relative z-10 mx-auto max-w-3xl px-4 pb-12 sm:px-6 lg:px-8">
-        <section class="mb-8 mt-2 rounded-3xl border border-white/70 bg-white/55 px-6 py-8 shadow-[0_14px_40px_rgba(15,111,121,0.15)] backdrop-blur-sm reveal-up">
-            <span class="soft-chip">Edición</span>
-            <h1 class="font-display mt-4 text-4xl leading-tight text-slate-900 sm:text-5xl">Actualizar hospedaje</h1>
-            <p class="mt-3 text-slate-700">Modifica los detalles de <strong>{{ $hospedaje->nombre }}</strong>.</p>
-        </section>
+    <div class="py-12">
+        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900">
+                    <form method="POST" action="{{ route('hospedajes.update', $hospedaje) }}" enctype="multipart/form-data" class="space-y-6">
+                        @csrf
+                        @method('PUT')
 
-        <section class="elevated-panel reveal-up rounded-3xl p-6 sm:p-7" style="animation-delay: 80ms;">
-            @if ($errors->any())
-                <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
-                    {{ $errors->first() }}
-                </div>
-            @endif
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                            <div>
+                                <x-input-label for="destino_id" :value="__('Destino')" />
+                                <select id="destino_id" name="destino_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                                    @foreach($destinos as $destino)
+                                        <option value="{{ $destino->id }}" {{ old('destino_id', $hospedaje->destino_id) == $destino->id ? 'selected' : '' }}>
+                                            {{ $destino->nombre }} ({{ $destino->pais }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <x-input-error class="mt-2" :messages="$errors->get('destino_id')" />
+                            </div>
 
-            <form method="POST" action="{{ route('hospedajes.update', $hospedaje->id) }}" enctype="multipart/form-data" class="space-y-4">
-                @csrf
-                @method('PUT')
+                            <div>
+                                <x-input-label for="nombre" :value="__('Nombre del Hospedaje')" />
+                                <x-text-input id="nombre" name="nombre" type="text" class="mt-1 block w-full" :value="old('nombre', $hospedaje->nombre)" required />
+                                <x-input-error class="mt-2" :messages="$errors->get('nombre')" />
+                            </div>
 
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div>
-                        <label for="nombre" class="mb-1 block text-sm font-semibold text-slate-700">Nombre del hospedaje</label>
-                        <input type="text" id="nombre" name="nombre" required value="{{ old('nombre', $hospedaje->nombre) }}" class="w-full rounded-xl border border-slate-300 bg-white/90 px-3 py-2.5 focus:border-[var(--brand-teal)] focus:outline-none">
-                    </div>
-                    <div>
-                        <label for="direccion" class="mb-1 block text-sm font-semibold text-slate-700">Dirección</label>
-                        <input type="text" id="direccion" name="direccion" required value="{{ old('direccion', $hospedaje->direccion) }}" class="w-full rounded-xl border border-slate-300 bg-white/90 px-3 py-2.5 focus:border-[var(--brand-teal)] focus:outline-none">
-                    </div>
-                    <div>
-                        <label for="capacidad" class="mb-1 block text-sm font-semibold text-slate-700">Capacidad (personas)</label>
-                        <input type="number" id="capacidad" name="capacidad" required min="1" value="{{ old('capacidad', $hospedaje->capacidad) }}" class="w-full rounded-xl border border-slate-300 bg-white/90 px-3 py-2.5 focus:border-[var(--brand-teal)] focus:outline-none">
-                    </div>
-                    <div>
-                        <label for="tipo" class="mb-1 block text-sm font-semibold text-slate-700">Tipo (Hotel, Depto, etc.)</label>
-                        <input type="text" id="tipo" name="tipo" required value="{{ old('tipo', $hospedaje->tipo) }}" class="w-full rounded-xl border border-slate-300 bg-white/90 px-3 py-2.5 focus:border-[var(--brand-teal)] focus:outline-none">
-                    </div>
-                </div>
+                            <div>
+                                <x-input-label for="categoria" :value="__('Categoría')" />
+                                <x-text-input id="categoria" name="categoria" type="text" class="mt-1 block w-full" :value="old('categoria', $hospedaje->categoria)" placeholder="Hotel, Hostal, Resort..." required />
+                                <x-input-error class="mt-2" :messages="$errors->get('categoria')" />
+                            </div>
 
-                <div>
-                    <label for="imagen" class="mb-1 block text-sm font-semibold text-slate-700">Imágenes (dejar vacío para mantener las actuales)</label>
-                    @if($hospedaje->imagen)
-                        <div class="mb-4 grid grid-cols-5 gap-2">
-                            @if(is_array($hospedaje->imagen))
-                                @foreach($hospedaje->imagen as $img)
-                                    <img src="{{ asset('storage/' . $img) }}" alt="Actual" class="h-16 w-16 rounded-lg object-cover">
-                                @endforeach
-                            @else
-                                <img src="{{ asset('storage/' . $hospedaje->imagen) }}" alt="Actual" class="h-16 w-16 rounded-lg object-cover">
-                            @endif
+                            <div>
+                                <x-input-label for="precio_noche" :value="__('Precio por Noche')" />
+                                <x-text-input id="precio_noche" name="precio_noche" type="number" step="0.01" class="mt-1 block w-full" :value="old('precio_noche', $hospedaje->precio_noche)" required />
+                                <x-input-error class="mt-2" :messages="$errors->get('precio_noche')" />
+                            </div>
+
+                            <div>
+                                <x-input-label for="habitaciones_disp" :value="__('Habitaciones Disponibles')" />
+                                <x-text-input id="habitaciones_disp" name="habitaciones_disp" type="number" class="mt-1 block w-full" :value="old('habitaciones_disp', $hospedaje->habitaciones_disp)" required />
+                                <x-input-error class="mt-2" :messages="$errors->get('habitaciones_disp')" />
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <x-input-label for="imagen" :value="__('Imágenes')" />
+                                @if($hospedaje->imagen)
+                                    <div class="mb-4 grid grid-cols-5 gap-2">
+                                        @php $imagenes = json_decode($hospedaje->imagen, true) ?? []; @endphp
+                                        @foreach($imagenes as $img)
+                                            <img src="{{ asset('storage/' . $img) }}" alt="Actual" class="h-16 w-16 rounded-lg object-cover">
+                                        @endforeach
+                                    </div>
+                                @endif
+                                <input id="imagen" name="imagen[]" type="file" multiple class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-indigo-700 hover:file:bg-indigo-100" accept="image/*" />
+                                <x-input-error class="mt-2" :messages="$errors->get('imagen')" />
+                            </div>
                         </div>
-                    @endif
-                    <input type="file" id="imagen" name="imagen[]" multiple accept="image/*" class="w-full rounded-xl border border-slate-300 bg-white/90 px-3 py-2.5 text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-[var(--brand-coral)] file:px-3 file:py-2 file:font-semibold file:text-white hover:file:opacity-90">
-                </div>
 
-                <div class="flex gap-3 pt-4">
-                    <button type="submit" class="accent-button flex-1">Actualizar cambios</button>
-                    <a href="{{ route('hospedajes.index') }}" class="flex-1 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-center font-semibold text-slate-700 transition hover:bg-slate-50">Cancelar</a>
+                        <div class="flex items-center justify-end space-x-3">
+                            <a href="{{ route('hospedajes.index') }}" class="inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25">
+                                {{ __('Cancelar') }}
+                            </a>
+                            <x-primary-button>
+                                {{ __('Actualizar Hospedaje') }}
+                            </x-primary-button>
+                        </div>
+                    </form>
                 </div>
-            </form>
-        </section>
-    </main>
-
-    @livewireScripts
-</body>
-</html>
+            </div>
+        </div>
+    </div>
+</x-app-layout>

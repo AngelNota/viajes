@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\destino;
 use App\Models\hospedaje;
 use App\Models\viaje;
+use App\Models\Reservacion;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -15,17 +16,21 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $userId = Auth::id();
+        $user = Auth::user();
+        $userId = $user->id;
 
         $totalDestinos = destino::count();
         $totalHospedajes = hospedaje::count();
-        $totalViajes = viaje::where('user_id', $userId)->count();
-        $gastoTotal = (float) viaje::where('user_id', $userId)->sum('total');
+        
+        // Metrics based on user's reservations
+        $totalViajes = Reservacion::where('user_id', $userId)->count();
+        $gastoTotal = (float) Reservacion::where('user_id', $userId)->sum('monto_pagado');
 
-        $proximosViajes = viaje::with('destino')
+        $proximosViajes = Reservacion::with(['viaje.destino'])
             ->where('user_id', $userId)
-            ->whereDate('fecha_inicio', '>=', now()->toDateString())
-            ->orderBy('fecha_inicio')
+            ->whereHas('viaje', function($query) {
+                $query->whereDate('fecha_inicio', '>=', now()->toDateString());
+            })
             ->limit(4)
             ->get();
 
@@ -38,7 +43,7 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-        $viajesMes = viaje::where('user_id', $userId)
+        $viajesMes = Reservacion::where('user_id', $userId)
             ->whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->count();

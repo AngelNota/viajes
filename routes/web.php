@@ -8,6 +8,8 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ViajeController;
+use App\Http\Controllers\ReservacionController;
+use App\Http\Controllers\transporteController;
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -33,6 +35,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('hospedajes', hospedajeController::class);
     Route::resource('transportes', transporteController::class);
     Route::resource('viajes', ViajeController::class);
+
+    // Reservation routes
+    Route::get('/reservaciones/{reservacione}/pdf', [ReservacionController::class, 'downloadPdf'])->name('reservaciones.pdf');
     Route::resource('reservaciones', ReservacionController::class);
 
     Route::get('/users', [UserController::class, 'index'])->name('users.index');

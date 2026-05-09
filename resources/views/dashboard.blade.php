@@ -50,18 +50,22 @@
                 </div>
 
                 @if ($proximosViajes->isEmpty())
-                    <p class="rounded-xl border border-dashed border-slate-300 bg-white/70 p-4 text-sm text-slate-600">No tienes viajes proximos. Crea uno para verlo aqui.</p>
+                    <p class="rounded-xl border border-dashed border-slate-300 bg-white/70 p-4 text-sm text-slate-600">No tienes viajes proximos. Reserva uno para verlo aqui.</p>
                 @else
                     <ul class="space-y-3">
-                        @foreach ($proximosViajes as $viaje)
+                        @foreach ($proximosViajes as $reservacion)
                             <li class="rounded-xl border border-white/75 bg-white/80 p-4 shadow-sm">
-                                <p class="font-display text-2xl text-slate-900">{{ $viaje->destino?->nombre ?? 'Destino sin nombre' }}</p>
+                                <div class="flex items-center justify-between">
+                                    <p class="font-display text-2xl text-slate-900">{{ $reservacion->viaje->nombre }}</p>
+                                    <span class="text-xs font-bold uppercase text-slate-400">#{{ $reservacion->folio }}</span>
+                                </div>
+                                <p class="mt-1 text-sm font-semibold text-[var(--brand-teal)]">{{ $reservacion->viaje->destino->nombre }}</p>
                                 <p class="mt-1 text-sm text-slate-600">
-                                    {{ \Illuminate\Support\Carbon::parse($viaje->fecha_inicio)->translatedFormat('d M Y') }}
+                                    {{ \Illuminate\Support\Carbon::parse($reservacion->viaje->fecha_inicio)->translatedFormat('d M Y') }}
                                     -
-                                    {{ \Illuminate\Support\Carbon::parse($viaje->fecha_fin)->translatedFormat('d M Y') }}
+                                    {{ \Illuminate\Support\Carbon::parse($reservacion->viaje->fecha_fin)->translatedFormat('d M Y') }}
                                 </p>
-                                <p class="mt-1 text-sm font-semibold text-[var(--brand-teal)]">Total estimado: ${{ number_format((float) $viaje->total, 2) }}</p>
+                                <p class="mt-2 text-sm font-bold text-slate-900">Monto pagado: ${{ number_format((float) $reservacion->monto_pagado, 2) }}</p>
                             </li>
                         @endforeach
                     </ul>

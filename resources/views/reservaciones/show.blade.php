@@ -78,9 +78,13 @@
                             </div>
 
                             <div class="mt-8 space-y-3">
+                                <a href="{{ route('reservaciones.pdf', $reservacion) }}" class="flex w-full items-center justify-center rounded-xl bg-indigo-600 px-6 py-3 text-sm font-bold text-white transition hover:bg-indigo-700 shadow-lg shadow-indigo-100">
+                                    <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                    DESCARGAR TICKET (PDF)
+                                </a>
                                 <button onclick="window.print()" class="flex w-full items-center justify-center rounded-xl bg-gray-900 px-6 py-3 text-sm font-bold text-white transition hover:bg-black">
                                     <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                                    IMPRIMIR TICKET
+                                    IMPRIMIR RÁPIDO
                                 </button>
                                 <a href="{{ route('reservaciones.index') }}" class="flex w-full items-center justify-center rounded-xl border border-gray-200 bg-white px-6 py-3 text-sm font-bold text-gray-700 transition hover:bg-gray-50">
                                     VOLVER AL LISTADO
@@ -91,8 +95,7 @@
 
                     <div class="mt-12 rounded-2xl bg-indigo-50 p-6 text-center">
                         <p class="text-xs font-medium text-indigo-700">
-                            Presenta este folio en sucursal o al abordar tu transporte. 
-                            Buen viaje te desea <span class="font-bold">Agencia de Viajes Atelier</span>.
+                            Este PDF es tu comprobante oficial. Preséntalo al abordar o en el check-in del hotel.
                         </p>
                     </div>
                 </div>

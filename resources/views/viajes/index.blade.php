@@ -12,15 +12,16 @@
         </div>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-12" x-data="{ showBookingModal: {{ session('reservacion_id') ? 'true' : 'false' }} }">
         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
             <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    @if (session('success'))
+                    @if (session('success') && !session('reservacion_id'))
                         <div class="mb-4 rounded-lg bg-green-100 p-4 text-sm text-green-700" role="alert">
                             {{ session('success') }}
                         </div>
                     @endif
+
                     @if (session('error'))
                         <div class="mb-4 rounded-lg bg-red-100 p-4 text-sm text-red-700" role="alert">
                             {{ session('error') }}
@@ -97,6 +98,68 @@
                         @endforelse
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Success Modal (FIXED) -->
+        <div 
+            x-show="showBookingModal" 
+            class="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-x-hidden overflow-y-auto"
+            style="display: none;"
+        >
+            <!-- Overlay -->
+            <div 
+                x-show="showBookingModal"
+                x-transition:enter="ease-out duration-300"
+                x-transition:enter-start="opacity-0"
+                x-transition:enter-end="opacity-100"
+                x-transition:leave="ease-in duration-200"
+                x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0"
+                class="fixed inset-0 bg-slate-900/80 backdrop-blur-md transition-opacity"
+                @click="showBookingModal = false"
+            ></div>
+
+            <!-- Modal Content -->
+            <div 
+                x-show="showBookingModal"
+                x-transition:enter="ease-out duration-300"
+                x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+                x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                x-transition:leave="ease-in duration-200"
+                x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+                x-transition:leave-end="opacity-0 scale-95 translate-y-4"
+                class="relative w-full max-w-lg bg-white rounded-[2.5rem] shadow-2xl overflow-hidden transform transition-all"
+            >
+                <div class="p-8 sm:p-12 text-center">
+                    <div class="mx-auto flex items-center justify-center h-24 w-24 rounded-full bg-green-100 mb-8 animate-bounce">
+                        <svg class="h-12 w-12 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
+                    
+                    <h3 class="text-4xl font-black text-gray-900 mb-4 leading-tight">
+                        ¡Reserva Realizada!
+                    </h3>
+                    
+                    <p class="text-xl text-gray-600 mb-10 leading-relaxed">
+                        {{ session('success') }}
+                    </p>
+
+                    <div class="space-y-4">
+                        @if(session('reservacion_id'))
+                            <a href="{{ route('reservaciones.show', session('reservacion_id')) }}" class="block w-full rounded-2xl bg-indigo-600 px-8 py-5 text-xl font-bold text-white shadow-xl shadow-indigo-200 transition-all hover:bg-indigo-700 active:scale-[0.98]">
+                                Ver detalles de mi viaje
+                            </a>
+                        @endif
+                        
+                        <button type="button" @click="showBookingModal = false" class="block w-full rounded-2xl bg-gray-100 px-8 py-4 text-lg font-bold text-gray-700 transition-all hover:bg-gray-200">
+                            Cerrar
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="bg-indigo-600 h-2 w-full"></div>
             </div>
         </div>
     </div>

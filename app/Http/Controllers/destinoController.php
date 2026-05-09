@@ -14,7 +14,7 @@ class destinoController extends Controller
     public function index()
     {
         $destinos = destino::all();
-        return view('destinos', compact('destinos'));
+        return view('destinos.index', compact('destinos'));
     }
 
     /**

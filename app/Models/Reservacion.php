@@ -9,12 +9,20 @@ class Reservacion extends Model
 {
     use SoftDeletes;
 
+    protected $table = 'reservaciones';
+
     protected $fillable = [
         'user_id',
         'viaje_id',
         'folio',
         'estado',
         'monto_pagado',
+    ];
+
+    protected $casts = [
+        'user_id' => 'integer',
+        'viaje_id' => 'integer',
+        'monto_pagado' => 'float',
     ];
 
     public function user()

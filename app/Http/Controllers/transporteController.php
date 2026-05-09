@@ -39,7 +39,6 @@ class transporteController extends Controller
             'destino' => 'required|string|max:255',
             'capacidad' => 'required|integer|min:1',
             'precio' => 'required|numeric|min:0',
-            'fecha_salida' => 'required|date_format:Y-m-d\TH:i',
         ]);
 
         transporte::create($request->all());
@@ -78,7 +77,6 @@ class transporteController extends Controller
             'destino' => 'required|string|max:255',
             'capacidad' => 'required|integer|min:1',
             'precio' => 'required|numeric|min:0',
-            'fecha_salida' => 'required|date_format:Y-m-d\TH:i',
         ]);
 
         $transporte->update($request->all());
