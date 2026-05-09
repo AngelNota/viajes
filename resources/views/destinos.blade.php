@@ -17,7 +17,8 @@
             <p class="mt-3 max-w-3xl text-slate-700">Crea fichas de lugares con imagen, ciudad y direccion, y manten una biblioteca visual para tus siguientes rutas.</p>
         </section>
 
-        <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        <div class="grid gap-8 @can('admin') lg:grid-cols-[1.1fr_0.9fr] @else lg:grid-cols-1 @endcan">
+            @can('admin')
             <section class="elevated-panel reveal-up rounded-3xl p-6 sm:p-7" style="animation-delay: 80ms;">
                 <h2 class="font-display text-3xl">Nuevo destino</h2>
                 <p class="mt-2 text-sm text-slate-600">Agrega informacion del lugar y una imagen para identificarlo visualmente.</p>
@@ -64,6 +65,7 @@
                     <button type="submit" class="accent-button w-full sm:w-auto">Agregar destino</button>
                 </form>
             </section>
+            @endcan
 
             <section class="reveal-up" style="animation-delay: 140ms;">
                 <div class="elevated-panel rounded-3xl p-6">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\hospedaje;
+use Illuminate\Support\Facades\Gate;
 
 class hospedajeController extends Controller
 {
@@ -29,6 +30,8 @@ class hospedajeController extends Controller
      */
     public function store(Request $request)
     {
+        Gate::authorize('admin');
+
         $request->validate([
             'nombre' => 'required|string|max:255',
             'direccion' => 'required|string|max:255',
@@ -67,6 +70,8 @@ class hospedajeController extends Controller
      */
     public function edit(string $id)
     {
+        Gate::authorize('admin');
+
         $hospedaje = hospedaje::findOrFail($id);
         return view('hospedajes.edit', compact('hospedaje'));
     }
@@ -76,6 +81,8 @@ class hospedajeController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        Gate::authorize('admin');
+
         $request->validate([
             'nombre' => 'required|string|max:255',
             'direccion' => 'required|string|max:255',
@@ -106,6 +113,8 @@ class hospedajeController extends Controller
      */
     public function destroy(string $id)
     {
+        Gate::authorize('admin');
+
         $hospedaje = hospedaje::findOrFail($id);
         $hospedaje->delete();
 

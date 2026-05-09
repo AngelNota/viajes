@@ -17,7 +17,8 @@
             <p class="mt-3 max-w-3xl text-slate-700">Registra hoteles, hostales, departamentos y más para tener siempre el lugar ideal donde descansar.</p>
         </section>
 
-        <div class="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        <div class="grid gap-8 @can('admin') lg:grid-cols-[1.1fr_0.9fr] @else lg:grid-cols-1 @endcan">
+            @can('admin')
             <section class="elevated-panel reveal-up rounded-3xl p-6 sm:p-7" style="animation-delay: 80ms;">
                 <h2 class="font-display text-3xl">Nuevo hospedaje</h2>
                 <p class="mt-2 text-sm text-slate-600">Completa la información del alojamiento y sube fotos de referencia.</p>
@@ -64,6 +65,7 @@
                     <button type="submit" class="accent-button w-full sm:w-auto">Agregar hospedaje</button>
                 </form>
             </section>
+            @endcan
 
             <section class="reveal-up" style="animation-delay: 140ms;">
                 <div class="elevated-panel rounded-3xl p-6">
@@ -94,6 +96,7 @@
                                                             <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
                                                         </svg>
                                                     </a>
+                                                    @can('admin')
                                                     <a href="{{ route('hospedajes.edit', $hospedaje->id) }}" class="rounded-lg bg-slate-100 p-2 text-slate-600 hover:bg-slate-200">
 
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -109,6 +112,7 @@
                                                             </svg>
                                                         </button>
                                                     </form>
+                                                    @endcan
                                                 </div>
                                             </div>
                                             <p class="mt-2 text-sm text-slate-600">{{ $hospedaje->direccion }}</p>

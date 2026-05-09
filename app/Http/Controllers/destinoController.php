@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\destino;
+use Illuminate\Support\Facades\Gate;
 
 class destinoController extends Controller
 {
@@ -29,6 +30,8 @@ class destinoController extends Controller
      */
     public function store(Request $request)
     {
+        Gate::authorize('admin');
+
         $request->validate([
             'nombre' => 'required|string|max:255',
             'ciudad' => 'required|string|max:255',

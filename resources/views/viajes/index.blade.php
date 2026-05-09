@@ -13,8 +13,8 @@
         <section class="mb-8 mt-2 flex flex-col items-start justify-between gap-6 rounded-3xl border border-white/70 bg-white/55 px-6 py-8 shadow-[0_14px_40px_rgba(15,111,121,0.15)] backdrop-blur-sm reveal-up sm:flex-row sm:items-center">
             <div>
                 <span class="soft-chip">Exploración</span>
-                <h1 class="font-display mt-4 text-4xl leading-tight text-slate-900 sm:text-5xl">Gestión de Viajes</h1>
-                <p class="mt-2 text-slate-700">Administra las expediciones y aventuras programadas.</p>
+                <h1 class="font-display mt-4 text-4xl leading-tight text-slate-900 sm:text-5xl">@if(Auth::user()->isAdmin()) Gestión de Viajes @else Mis Viajes @endif</h1>
+                <p class="mt-2 text-slate-700">@if(Auth::user()->isAdmin()) Administra las expediciones y aventuras programadas. @else Consulta y gestiona tus próximas aventuras. @endif</p>
             </div>
             <div class="flex flex-wrap gap-3">
                 <a href="{{ route('viajes.create') }}" class="accent-button flex items-center gap-2">
@@ -70,6 +70,7 @@
                         </div>
 
                         <div class="flex gap-2">
+                            @if(Auth::user()->isAdmin() || $viaje->user_id === Auth::id())
                             <a href="{{ route('viajes.edit', $viaje) }}" class="flex-1 rounded-xl border border-slate-200 py-2 text-center text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-50">
                                 Editar
                             </a>
@@ -80,6 +81,7 @@
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
                                 </button>
                             </form>
+                            @endif
                         </div>
                     </div>
                 </article>
